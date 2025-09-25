@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import math
 
-
 class MultiHeadAttentionBlock(nn.Module):
     """
     We will implement attention described in the Attention is all you need paper
@@ -84,17 +83,3 @@ class MultiHeadAttentionBlock(nn.Module):
         x = x.transpose(1,2).view(x.shape[0], x.shape[1], self.d_model)
 
         return self.w_o(x)
-
-    
-     
-    
-
-
-
-
-        
-
-
-
-
-
