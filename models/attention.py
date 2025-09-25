@@ -80,6 +80,8 @@ class MultiHeadAttentionBlock(nn.Module):
         x ,self.attention_scores = self.attention(query, key, value, mask ,self.dropout)
 
 
-        x = x.transpose(1,2).contiguous().view(x.shape[0], x.shape[1], self.d_model)
+        transposed_view = x.transpose(1,2).contiguous()
+        
+        x = transposed_view.view(transposed_view.shape[0], transposed_view.shape[1], self.d_model)
 
         return self.w_o(x)
