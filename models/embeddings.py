@@ -13,7 +13,6 @@ class Embeddings(nn.Module):
         self.embedding_layer = nn.Embedding(vocab_size, d_model)
 
     def forward(self, x):
-
         return self.embedding_layer(x) * math.sqrt(self.d_model)
 
 
@@ -47,9 +46,7 @@ class PositionalEncoding(nn.Module):
         self.register_buffer('pe', pe)
 
     def forward(self, x):
-
         # Add Input tensor X and the   
-    
         return x + self.pe[:, :x.shape(1), :].requires_grad_(False)
     
 
