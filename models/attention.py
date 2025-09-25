@@ -17,19 +17,19 @@ class MultiHeadAttentionBlock(nn.Module):
 
         # Lets create a d_k, d_k is actually the total heads division
         # For example, if d_model = 512 and h = 8 and d_k = 64
-        d_k = d_model // h
+        self.d_k = d_model // h
 
         # Create 4 attention layer needed for the attention mechanism
-        self.w_q = nn.linear(d_model, d_model)
-        self.w_k = nn.linear(d_model, d_model)
-        self.w_v = nn.linear(d_model, d_model)
-        self.w_o = nn.linear(d_model, d_model)
+        self.w_q = nn.Linear(d_model, d_model)
+        self.w_k = nn.Linear(d_model, d_model)
+        self.w_v = nn.Linear(d_model, d_model)
+        self.w_o = nn.Linear(d_model, d_model)
 
         self.dropout = nn.Dropout(dropout)
 
 
     @staticmethod
-    def attention(query, key, value, mask, dropout: nn.Dropout):
+    def attention(query, key, value, mask, dropout: float):
 
         """
         This is the core "Scaled Dot-Product Attention" calculation.
@@ -38,7 +38,7 @@ class MultiHeadAttentionBlock(nn.Module):
         """
 
         # The shape of Query, Key and Value will be, (Batch, h, d_k, Seq_Len), 
-        d_k = query.shape(-1)
+        d_k = query.shape[-1]
         
         # --- Step1: Calculate raw attention scores ---
         # Multiply  query with transpose of key
@@ -69,17 +69,17 @@ class MultiHeadAttentionBlock(nn.Module):
 
         query = self.w_q(q)
         key = self.w_k(k)
-        value = self.v_k(v)
+        value = self.w_v(v)
 
 
         query = query.view(query.shape[0], query.shape[1], self.h, self.d_k).transpose(1,2)
         key = key.view(key.shape[0], key.shape[1], self.h, self.d_k).transpose(1,2)
-        value = key.view(key.shape[0], key.shape[1], self.h, self.d_k).transpose(1,2)
+        value = value.view(key.shape[0], value.shape[1], self.h, self.d_k).transpose(1,2)
 
 
-        x ,self.attention_scores = self.attention(query, key, value, self.dropout)
+        x ,self.attention_scores = self.attention(query, key, value, mask ,self.dropout)
 
 
-        x = x.transpose(1,2).view(x.shape[0], x.shape[1], self.d_model)
+        x = x.transpose(1,2).contiguous().view(x.shape[0], x.shape[1], self.d_model)
 
         return self.w_o(x)

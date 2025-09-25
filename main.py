@@ -29,14 +29,15 @@ def run_embedding_and_attention_tests():
         print(f"After token embedding the shape is: {token_vectors.shape}")
         
         pos_enc = PositionalEncoding(d_model = d_model, seq_len = 50, dropout=0)
-        position_vectors = pos_enc.forward(input_tokens_ids)
+        position_vectors = pos_enc.forward(token_vectors)
 
         print(f"This is the shape after Positional Encoding: {position_vectors}")
 
+        print(f"Entering into MultiHeadAttention")
         multi_head = MultiHeadAttentionBlock(d_model = d_model, h = h, dropout=0)
-
+        print(f"Exited the MultiHeadAttentionBlock")
         # now we need to call its forward method for calculating the Key, Query and Value
-        attention_output = multi_head.forward(query = position_vectors, key = position_vectors, value = position_vectors, mask = None)
+        attention_output = multi_head.forward(q = position_vectors, k = position_vectors, v = position_vectors, mask = None)
         print(f"Step 3: After MultiHeadAttention, shape is {attention_output.shape}\n")
 
         # --- 4. final check ----
