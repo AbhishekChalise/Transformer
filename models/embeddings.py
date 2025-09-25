@@ -13,7 +13,6 @@ class Embeddings(nn.Module):
         self.embedding_layer = nn.Embedding(vocab_size, d_model)
 
     def forward(self, x):
-
         return self.embedding_layer(x) * math.sqrt(self.d_model)
 
 
@@ -39,18 +38,16 @@ class PositionalEncoding(nn.Module):
 
         pe[:, 0::2] = torch.sin(number)
 
-        pe[:, 1::3] = torch.cos(number)
+        pe[:, 1::2] = torch.cos(number)
 
         # Changed the dimension of the vector to (1, seq_len, d_model) size
-        pe.unsqueeze(0)
+        pe = pe.unsqueeze(0)
 
         self.register_buffer('pe', pe)
 
     def forward(self, x):
-
         # Add Input tensor X and the   
-    
-        return x + self.pe[:, :x.shape(1), :].requires_grad_(False)
+        return x + self.pe[:, :x.shape[1], :].requires_grad_(False)
     
 
     
