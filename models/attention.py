@@ -74,7 +74,7 @@ class MultiHeadAttentionBlock(nn.Module):
 
         query = query.view(query.shape[0], query.shape[1], self.h, self.d_k).transpose(1,2)
         key = key.view(key.shape[0], key.shape[1], self.h, self.d_k).transpose(1,2)
-        value = value.view(key.shape[0], value.shape[1], self.h, self.d_k).transpose(1,2)
+        value = value.view(value.shape[0], value.shape[1], self.h, self.d_k).transpose(1,2)
 
 
         x ,self.attention_scores = self.attention(query, key, value, mask ,self.dropout)
