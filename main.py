@@ -12,10 +12,12 @@ def run_embedding_and_attention_tests():
 
     d_model = 32
     h = 4
+    seq_len = 10
 
     # ----- 2. Create Fake data --------
     # A single sentence with 10 words
     # Shape = (batch_size = 1, sequence_length = 10)
+    
 
     input_tokens_ids = torch.randint(1, 100, (1,10))
 
