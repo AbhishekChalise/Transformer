@@ -1,6 +1,7 @@
 import torch 
 from models.embeddings import Embeddings, PositionalEncoding 
 from models.attention import  MultiHeadAttentionBlock
+from models.layers import LayerNormalization
 
 def run_embedding_and_attention_tests():
     """
@@ -13,7 +14,7 @@ def run_embedding_and_attention_tests():
     d_model = 32
     h = 4
     seq_len = 10
-
+    batch_size = 4
     # ----- 2. Create Fake data --------
     # A single sentence with 10 words
     # Shape = (batch_size = 1, sequence_length = 10)
@@ -52,6 +53,22 @@ def run_embedding_and_attention_tests():
         
     # except Exception as e:
     #     print(f"The error is: {e}")
+
+    # 2. Create an Instance of the Layer
+    norm_layer = LayerNormalization(d_model = d_model)
+
+    input_tensor = torch.randn(batch_size, seq_len, d_model) * 10 + 5
+
+    print(f"Input Tensor Shape: {input_tensor.shape}")
+    
+    print(f"Mean of input tensor: {input_tensor.mean():.4f}")
+
+    print(f"Sandard deviation: {input_tensor.std():.4f}\n")
+
+    output_tensor = norm_layer.forward(input_tensor)
+
+    print("The output tensor")
+
 
 if __name__ == "__main__":
     run_embedding_and_attention_tests()
