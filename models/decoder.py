@@ -50,3 +50,20 @@ class DecoderLayer(nn.Module):
         return x
     
 
+class Decoder(nn.Module):
+    """
+    Implements the full Transformer Decoder stack.
+    """
+    def __init__(self, d_model: int, num_layers: int, num_heads: int, d_ff: int, dropout_p: float):
+   
+        super().__init__()
+        self.layers = nn.ModuleList([
+            DecoderLayer(d_model, num_heads, d_ff, dropout_p) for _ in range(num_layers)
+        ])
+
+    def forward(self, x: torch.Tensor, encoder_output: torch.Tensor, src_mask: torch.Tensor, tgt_mask: torch.Tensor) -> torch.Tensor:
+    
+        # Pass the input through each decoder layer in sequence
+        for layer in self.layers:
+            x = layer.forward(x, encoder_output, src_mask, tgt_mask)
+        return x
