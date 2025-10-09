@@ -1,69 +1,73 @@
 import torch
 import torch.nn as nn
 
-# Import the building blocks from your other files
-from .attention import MultiHeadAttentionBlock
-from .feedforward import FeedForwardNetwork
-from .layers import LayerNormalization
+from attention import MultiHeadAttentionBlock
+from embeddings import Embeddings, PositionalEncoding
+from encoder import EncoderLayer
+from feedforward import FeedForwardNetwork
+from layers import LayerNormalization
+
+class Decoder(nn.Module):
+    """
+    The full Transformer Decoder, which is a stack of multiple Decoder layers
+    """
+    def __init__(self, d_model: float, dropout: float) -> torch.tensor:
+        
+        self.dropout = dropout
+        self.d_model = d_model
+
+    def forward(self, x):
+        
+        attention = MultiHeadAttentionBlock(torch, self.dropout)
+        
+        decoder = Decoder(self.d_model, self.dropout)
+
+        encoder = EncoderLayer(self.d_model, self.dropout)
 
 class DecoderLayer(nn.Module):
-
+    """
+    This is the decoder layer and the normalization of the data is not permitted.
+    """
     def __init__(self, d_model: int, num_heads: int, d_ff: int, dropout_p: float):
-
         super().__init__()
-        # Masked self-attention mechanism
-        self.self_attention = MultiHeadAttentionBlock(d_model, num_heads, dropout_p)
-        # Cross-attention mechanism (attends to encoder output)
-        self.cross_attention = MultiHeadAttentionBlock(d_model, num_heads, dropout_p)
-        # Feed-forward network
-        self.feed_forward = FeedForwardNetwork(d_model, d_ff, dropout_p)
 
-        # Three layer normalization modules
+        # Tool1: Masked Self-Attention
+        self.self_attention = MultiHeadAttentionBlock(d_model, num_heads, dropout_p)
+
+        # Tool2: Cross-Attention
+        self.cross_attention = MultiHeadAttentionBlock(d_model, num_heads, dropout_p)
+
+        # Tool3: Feed Forward Network
+        self.feed_forward = FeedForwardNetwork(d_model, d_ff, dropout_p) 
+
+        # Tool4: Normalization Module (one for after each main tool)
         self.norm1 = LayerNormalization(d_model)
         self.norm2 = LayerNormalization(d_model)
         self.norm3 = LayerNormalization(d_model)
 
-        # Dropout for the residual connections
+        # Tool 5: Dropout (a regularization Technique)
         self.dropout = nn.Dropout(dropout_p)
+
     
     def forward(self, x: torch.Tensor, encoder_output: torch.Tensor, src_mask: torch.Tensor, tgt_mask: torch.Tensor) -> torch.Tensor:
+        
+        """
+        Forward pass for the DecoderLayer
+        """
 
-        # 1. Masked Multi-Head Self-Attention sub-layer
-        self_attention_output = self.self_attention.forward(x, x, x, tgt_mask)
-        # 1a. Add & Norm
-        x = x + self.dropout(self_attention_output)
-        x = self.norm1.forward(x)
+        # Encoder layer for the layer normalization.
+        encoder = EncoderLayer(self, permitted_value = for x in range nn.values)
+        # Decoder layer for the layer optimization.
+        decoder = Decoder(self, value = for x in permitted_values)
 
-        # 2. Cross-Attention (Encoder-Decoder Attention) sub-layer
-        # Query is from the decoder (x), Key and Value are from the encoder (encoder_output)
-        cross_attention_output = self.cross_attention.forward(x, encoder_output, encoder_output, src_mask)
-        # 2a. Add & Norm
-        x = x + self.dropout(cross_attention_output)
-        x = self.norm2.forward(x)
+        # Calculating attention mechanism.
+        attention  = MultiHeadAttentionBlock(Attention = self.attention, layer = self.LayerNormalization, Accounts = self.Accounts)
 
-        # 3. Feed-Forward sub-layer
-        ff_output = self.feed_forward.forward(x)
-        # 3a. Add & Norm
-        x = x + self.dropout(ff_output)
-        x = self.norm3.forward(x)
+        position = PositionalEncoding(Attention = self.attention, layers = LayerNormalization)
 
-        return x
-    
+        # For decoder layer we have multiple layers available in which we run multiple loops to reproduce the outputs for the procedures.
 
-class Decoder(nn.Module):
-    """
-    Implements the full Transformer Decoder stack.
-    """
-    def __init__(self, d_model: int, num_layers: int, num_heads: int, d_ff: int, dropout_p: float):
-   
-        super().__init__()
-        self.layers = nn.ModuleList([
-            DecoderLayer(d_model, num_heads, d_ff, dropout_p) for _ in range(num_layers)
-        ])
+        decoder = position
 
-    def forward(self, x: torch.Tensor, encoder_output: torch.Tensor, src_mask: torch.Tensor, tgt_mask: torch.Tensor) -> torch.Tensor:
-    
-        # Pass the input through each decoder layer in sequence
-        for layer in self.layers:
-            x = layer.forward(x, encoder_output, src_mask, tgt_mask)
-        return x
+        d1 = decoder(self, x, encoder_output)
+        d1 = decoder(self, x, )
