@@ -2,10 +2,10 @@ import torch
 import torch.nn as nn
 
 from models.encoder import EncoderLayer
-from models.decoder import DecoderLayer
+from models.decoder import Decoder
 from models.decoder import Projection_Layer
 class Transformer(nn.Module):
-    def __init__(self, encoder: EncoderLayer, decoder: DecoderLayer, projection_layer: Projection_Layer):
+    def __init__(self, encoder: EncoderLayer, decoder: Decoder, projection_layer: Projection_Layer):
         super().__init__()
         self.encoder = encoder
         self.decoder = decoder
