@@ -130,3 +130,17 @@ class Decoder(nn.Module):
             tgt = layer(tgt, memory, src_mask, tgt_mask) # Pass it through one DecoderLayer
         
         return tgt # The final output of the decoder stack
+
+class Projection_Layer(nn.Module):
+    def __init__(self, d_model: int, vocab_size: int):
+        super.__init__()
+
+        self.proj = nn.Linear(d_model, vocab_size)
+
+    
+    def forward(self, x:torch.Tensor) -> torch.Tensor:
+        # The output tensor (logits) will have a shape of (batch_size, seq_len, vocab_size).
+        # For each word in the sequence, it gives a score for every word in the vocabulary.
+
+        return self.proj(x)
+
