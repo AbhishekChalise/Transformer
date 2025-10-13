@@ -1,73 +1,67 @@
 import torch
 import torch.nn as nn
 
-from attention import MultiHeadAttentionBlock
-from embeddings import Embeddings, PositionalEncoding
-from encoder import EncoderLayer
-from feedforward import FeedForwardNetwork
-from layers import LayerNormalization
+from models.attention import MultiHeadAttentionBlock
+from models.layers import LayerNormalization
+from models.feedforward import FeedForwardNetwork
 
-class Decoder(nn.Module):
-    """
-    The full Transformer Decoder, which is a stack of multiple Decoder layers
-    """
-    def __init__(self, d_model: float, dropout: float) -> torch.tensor:
-        
-        self.dropout = dropout
-        self.d_model = d_model
+class SimpleDecoderLayer(nn.Module):
 
-    def forward(self, x):
-        
-        attention = MultiHeadAttentionBlock(torch, self.dropout)
-        
-        decoder = Decoder(self.d_model, self.dropout)
-
-        encoder = EncoderLayer(self.d_model, self.dropout)
-
-class DecoderLayer(nn.Module):
-    """
-    This is the decoder layer and the normalization of the data is not permitted.
-    """
-    def __init__(self, d_model: int, num_heads: int, d_ff: int, dropout_p: float):
+    def __init__(self, d_model: int, h: int, d_ff: int, dropout:float):
         super().__init__()
 
-        # Tool1: Masked Self-Attention
-        self.self_attention = MultiHeadAttentionBlock(d_model, num_heads, dropout_p)
+        # ---Defining the layers components
+        # these are the three core operations the decoder will perform in sequence.
+        # This block will look at the French sentence generated so far ("Le  chat").
+        self.self_attention_block = MultiHeadAttentionBlock(d_model, h, dropout)
 
-        # Tool2: Cross-Attention
-        self.cross_attention = MultiHeadAttentionBlock(d_model, num_heads, dropout_p)
+        # This block will connect the French sentence to the English Sentence.
+        self.cross_attention_block = MultiHeadAttentionBlock(d_model, h, dropout)
 
-        # Tool3: Feed Forward Network
-        self.feed_forward = FeedForwardNetwork(d_model, d_ff, dropout_p) 
+        # These are the helper layers to make the training stable
 
-        # Tool4: Normalization Module (one for after each main tool)
-        self.norm1 = LayerNormalization(d_model)
-        self.norm2 = LayerNormalization(d_model)
-        self.norm3 = LayerNormalization(d_model)
+        self.linear_norm1 = LayerNormalization(d_model)
+        self.linear_norm2 = LayerNormalization(d_model)
+        self.linear_norm3 = LayerNormalization(d_model)
 
-        # Tool 5: Dropout (a regularization Technique)
-        self.dropout = nn.Dropout(dropout_p)
+        self.dropout  = nn.Dropout(dropout)
 
-    
-    def forward(self, x: torch.Tensor, encoder_output: torch.Tensor, src_mask: torch.Tensor, tgt_mask: torch.Tensor) -> torch.Tensor:
-        
+    def forward(self, tgt: torch.Tensor, memory: torch.Tensor, src_mask: torch.Tensor, tgt_mask: torch.Tensor) -> torch.Tensor:
         """
-        Forward pass for the DecoderLayer
+        This function describes the step-by-step process for generating the next part of the translation.
+
+        Args:
+        tgt: The French sentence generated so far (e.g., the vectors for "Le", "chat).
+        memory: The Encoders output (the meaning of "The cat is black").
+        src_mask: Mask for the English sentence(used to ignore the padding tokens).
+        tgt_mask: Mask for the French Sentence(crucial for training).
+
         """
 
-        # Encoder layer for the layer normalization.
-        encoder = EncoderLayer(self, permitted_value = for x in range nn.values)
-        # Decoder layer for the layer optimization.
-        decoder = Decoder(self, value = for x in permitted_values)
+        #------------------------------------------------------------------------------------------------------------------------------
+        # STEP 1: Masked Self-Attention
+        # GOAL: Understand the context of the French sentence generated so far.
+        # Before deciding on the next word, the model must understand "Le chat".
 
-        # Calculating attention mechanism.
-        attention  = MultiHeadAttentionBlock(Attention = self.attention, layer = self.LayerNormalization, Accounts = self.Accounts)
+        # -----------------------------------------------------------------------------------------------------------------------------
 
-        position = PositionalEncoding(Attention = self.attention, layers = LayerNormalization)
+        self_atten_out = self.self_attention_block(tgt, tgt, tgt, tgt_mask)
+        # Why this line because we are feeding current French Sentence ('tgt') into attention block.
+        # Why (tgt, tgt, tgt) ? Because this is self attention. The sentence is looking at itself to find relationship between its own words. For example,
+        # it learns that chat is related to "Le"
+        # Why (tgt_mask) it is because we are hiding this in order to  not make the model peek at the future tokens in order to make them sure that they wont cheat.
 
-        # For decoder layer we have multiple layers available in which we run multiple loops to reproduce the outputs for the procedures.
 
-        decoder = position
 
-        d1 = decoder(self, x, encoder_output)
-        d1 = decoder(self, x, )
+        tgt = tgt + self.dropout(self_atten_out)
+        # why this becuase we dont want to loose the original tgt
+        # This is called Residual Connection because
+        # if we calculate gradient then without residual the derivative may come very closer to zero
+        # therefore if we add the tgt matrix and dropout then 
+
+        tgt = self.linear_norm1(tgt)
+        # Here we normalize the target values so that the target matrix is stable.
+
+        # Step2: Cross - Attention
+        # Goal: Connect the French Sentence to the original English sentences
+        # the model asks: I have understood the 
