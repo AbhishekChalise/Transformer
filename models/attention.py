@@ -5,7 +5,7 @@ import math
 class MultiHeadAttentionBlock(nn.Module):
     """
     We will implement attention described in the Attention is all you need paper
-    """
+    """ 
 
     def __init__(self, d_model: int, h: int, dropout: float):
         super().__init__()

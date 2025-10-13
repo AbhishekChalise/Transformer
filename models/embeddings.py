@@ -48,20 +48,3 @@ class PositionalEncoding(nn.Module):
     def forward(self, x):
         # Add Input tensor X and the   
         return x + self.pe[:, :x.shape[1], :].requires_grad_(False)
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
