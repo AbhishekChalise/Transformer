@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 
+from models.attention import MultiHeadAttentionBlock
+
 # --- Assume all your classes are in a file named `model.py` ---
 # from model import MultiHeadAttentionBlock, ...
 

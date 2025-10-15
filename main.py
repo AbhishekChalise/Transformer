@@ -26,8 +26,8 @@ def run_embedding_and_attention_tests():
 
     # try:
 
-    #     token_emb = Embeddings(d_model = d_model, vocab_size = 100)
-    #     token_vectors= token_emb.forward(input_tokens_ids)
+        # token_emb = Embeddings(d_model = d_model, vocab_size = 100)
+        # token_vectors= token_emb.forward(input_tokens_ids)
         
     #     print(f"After token embedding the shape is: {token_vectors.shape}")
         
