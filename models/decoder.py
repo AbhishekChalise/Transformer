@@ -83,7 +83,7 @@ class SimpleDecoderLayer(nn.Module):
 
         tgt = tgt + self.dropout(cross_attention_output)
         # This is for residual connection so that we wont face the gradient descend issues.
-
+        tgt = self.linear_norm2(tgt)
         # Step3: feed forward layer
         ff_output = self.feed_forward_block(tgt)
 
@@ -133,7 +133,7 @@ class Decoder(nn.Module):
 
 class Projection_Layer(nn.Module):
     def __init__(self, d_model: int, vocab_size: int):
-        super.__init__()
+        super().__init__()
 
         self.proj = nn.Linear(d_model, vocab_size)
 

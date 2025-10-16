@@ -16,16 +16,15 @@ class EncoderLayer(nn.Module):
     are applied after each layer
     """
 
-    def __init__(self, d_model: int, batch_size: int, d_iff: int, dropout: float):
+    def __init__(self, d_model: int, h: int, d_iff: int, dropout: float):
 
         super().__init__()
         self.d_model = d_model
-        self.batch_size = batch_size
         self.d_iff = d_iff 
         self.dropout = nn.Dropout(dropout)
 
         # Multi-Head self attention block
-        self.multi_head  = MultiHeadAttentionBlock(d_model, batch_size, dropout)
+        self.multi_head  = MultiHeadAttentionBlock(d_model, h, dropout)
         # Feed-Forward block
         self.feed_forward = FeedForwardNetwork(d_model, d_iff, dropout)
 
@@ -54,3 +53,23 @@ class EncoderLayer(nn.Module):
         x = self.layer_norm2.forward(x)
 
         return x
+    
+
+class Encoder(nn.Module):
+    def __init__(self, src_vocab_size: int, d_model: int, num_layers: int, h: int, d_ff: int, dropout: float, seq_len: int):
+        super().__init__()
+        self.embedding = Embeddings(d_model, src_vocab_size)
+        self.positional_encoding = PositionalEncoding(d_model, seq_len, dropout)
+        self.layers = nn.ModuleList(
+            [EncoderLayer(d_model, h, d_ff, dropout) for _ in range(num_layers)]
+        )
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, src: torch.Tensor, src_mask: torch.Tensor) -> torch.Tensor:
+        src = self.embedding(src)
+        src = self.positional_encoding(src)
+        src = self.dropout(src)
+        
+        for layer in self.layers:
+            src = layer(src, src_mask)
+        return src
